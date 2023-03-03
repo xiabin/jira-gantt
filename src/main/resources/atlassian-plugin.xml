@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}" url="${project.organization.url}"/>
+        <param name="plugin-icon">images/pluginIcon.png</param>
+        <param name="plugin-logo">images/pluginLogo.png</param>
+    </plugin-info>
+    <!-- add our i18n resource -->
+    <resource type="i18n" name="i18n" location="gantt"/>
+    <!-- add our web resources -->
+    <web-resource key="gantt-resources" name="gantt Web Resources">
+        <dependency>com.atlassian.auiplugin:ajs</dependency>
+        <resource type="download" name="gantt.css" location="/css/gantt.css"/>
+        <resource type="download" name="gantt.js" location="/js/gantt.js"/>
+        <resource type="download" name="images/" location="/images"/>
+        <context>gantt</context>
+    </web-resource>
+    <servlet name="Gantt" i18n-name-key="gantt.name" key="gantt" class="com.sensorsdata.jiraplugin.servlet.Gantt">
+        <description key="gantt.description">The Gantt Home</description>
+        <url-pattern>/gantt</url-pattern>
+    </servlet>
+    <servlet name="Test" i18n-name-key="test.name" key="test-servlet" class="com.sensorsdata.jiraplugin.servlet.Test">
+        <description key=" Test Servlet">Test Servlet</description>
+        <url-pattern>/test</url-pattern>
+    </servlet>
+</atlassian-plugin>
