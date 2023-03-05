@@ -117,6 +117,20 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.atlassian.activeobjects</groupId>
+            <artifactId>activeobjects-plugin</artifactId>
+            <version>${ao.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Google Collections, useful utilities for manipulating collections -->
+        <dependency>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>com.atlassian.templaterenderer</groupId>
@@ -136,7 +150,7 @@
                 <configuration>
                     <productVersion>${jira.version}</productVersion>
                     <productDataVersion>${jira.version}</productDataVersion>
-                    <log4jProperties>src/main/resources/log4j.properties</log4jProperties>
+<!--                    <log4jProperties>src/main/resources/log4j.properties</log4jProperties>-->
 
                     <!-- Uncomment to install TestKit backdoor in JIRA. -->
                     <!--
@@ -195,5 +209,6 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <lombok.version>1.18.22</lombok.version>
+        <ao.version>4.0.0</ao.version>
     </properties>
 </project>
