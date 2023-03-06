@@ -26,7 +26,7 @@
 <body class="page-type-admin">
 <div class="content-container" id="issue-crud-container">
     <div class="content-body">
-        <h1>已经有 #if(!$ganttConfigList || $ganttConfigList.size()==0)<span style="color:red">0</span>#end 个配置!</h1>
+        <h1>已经有 <span style="color:red">$ganttConfigList.size()</span> 个配置!</h1>
         #if ($errors && $errors.size()>0)
             <div class="aui-message error shadowed crud-error">
                 #foreach($error in $errors)
