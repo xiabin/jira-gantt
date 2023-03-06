@@ -259,7 +259,6 @@ public class Gantt extends HttpServlet {
         ganttIssueList = this.flattenTree(ganttIssueTree);
 
         context.put("ganttIssueList", ganttIssueList);
-        context.put("ganttIssueListJson", new Gson().toJson(ganttIssueList));
 
 
         String templatePath = "/templates/gantt.vm";

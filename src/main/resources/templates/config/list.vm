@@ -1,0 +1,90 @@
+<html>
+<head>
+    <title>gantt 配置</title>
+    <meta name="decorator" content="atl.general">
+    <script>
+        AJS.$(document).ready(function() {
+            jQuery('.delete-gantt-config').click(function() {
+                console.log('deleting');
+                var self = jQuery(this);
+                jQuery.ajax({
+                    type: "delete",
+                    url: "config?id=" + self.data("key"),
+                    success: function(data) {
+                        console.log('dom', self, data);
+                        self.parent().parent().remove();
+                    },
+                    error: function() {
+                        console.log('error', arguments);
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</head>
+<body class="page-type-admin">
+<div class="content-container" id="issue-crud-container">
+    <div class="content-body">
+        <h1>已经有 #if(!$ganttConfigList || $ganttConfigList.size()==0)<span style="color:red">0</span>#end 个配置!</h1>
+        #if ($errors && $errors.size()>0)
+            <div class="aui-message error shadowed crud-error">
+                #foreach($error in $errors)
+                    <p class="title">
+                        <span class="aui-icon icon-error"></span>
+                        <strong>$error</strong>
+                    </p>
+                #end
+            </div>
+            <!-- .aui-message -->
+        #end
+
+        #if ($ganttConfigList.size() > 0)
+            <div class="issues">
+                <table class="aui">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>StartDateCustomFieldId</th>
+                        <th>EndDateCustomFieldId</th>
+                        <th>JqlQuery</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        #foreach( $ganttConfig in $ganttConfigList )
+                        <tr class="issue-line">
+                            <td >$ganttConfig.getID()</td>
+                            <td >$ganttConfig.getName()</td>
+                            <td>
+                                #if($ganttConfig.getStartDateCustomFieldId())
+                                    $ganttConfig.getStartDateCustomFieldId()
+                                #end
+                            </td>
+                            <td>
+                                #if($ganttConfig.getEndDateCustomFieldId())
+                                    $ganttConfig.getEndDateCustomFieldId()
+                                #end
+                            </td>
+                            <td>
+                                $ganttConfig.getJqlQuery()
+                            </td>
+                            <td>
+                                <a href="config?actionType=edit&key=$ganttConfig.getID()" class="edit-gantt-config">Edit</a>
+                                <a href="javascript:void(0)" class="delete-gantt-config" data-key="$ganttConfig.getID()">Delete</a>
+                            </td>
+                        </tr>
+                        #end
+                    </tbody>
+                </table>
+            </div>
+        #end
+        <form method="get" action="config" class="aui">
+            <input type="hidden" name="actionType" value="new">
+            <input type="submit" class="button" value="Create new gantt">
+        </form>
+    </div>
+</div>
+</body>
+</html>
