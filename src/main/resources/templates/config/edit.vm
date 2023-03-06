@@ -1,48 +1,55 @@
 <html>
 <head>
-    <title>Edit Issue — Issue CRUD Tutorial</title>
+    <title>编辑 Gantt 配置 — Jira Gantt</title>
     <meta name="decorator" content="atl.general">
 </head>
 <body class="page-type-admin">
     <div class="content-container" id="issue-crud-container">
 
         <div class="content-body">
-            <h1>Edit issue $issue.getKey()</h1>
+            <h1>编辑 gantt 配置 $ganttConfig.getName()</h1>
 
-            #if ($errors.size()>0)
-                <div class="aui-message error shadowed">
-                    #foreach($error in $errors)
-                        <p class="title">
-                            <span class="aui-icon icon-error"></span>
-                            <strong>$error</strong>
-                        </p>
-                    #end
-                </div>
-                <!-- .aui-message -->
-            #end
 
             <div class="create-issue-panel">
 
-                <form method="post" id="h" action="issuecrud" class="aui">
+                <form method="post" id="h" action="config" class="aui">
                     <input type="hidden" name="actionType" value="edit">
-                    <input type="hidden" name="key" value="$issue.getKey()">
+                    <input type="hidden" name="id" value="$ganttConfig.getID()">
                     <div class="field-group">
-                        <label for="h-fsummary">
+                        <label for="h-name">
                             Summary
                             <span class="aui-icon icon-required"></span>
                             <span class="content">required</span>
                         </label>
-                        <input id="h-fsummary" class="text long-field" type="text" name="summary" value="$issue.getSummary()">
+                        <input id="h-name" class="text long-field" type="text" name="name" value="$ganttConfig.getName()">
                     </div>
                     <div class="field-group">
-                        <label for="h-fdescription">
-                            Description
+                        <label for="h-startdate-customfiled-id">
+                            startDataCustomFieldId
+                            <span class="aui-icon icon-required"></span>
+                            <span class="content">required</span>
                         </label>
-                        <textarea style="height: 200px; width: 300px" id="h-fdescription" name="description">#if($issue.getDescription() && !$issue.getDescription.isEmpty())$issue.getDescription()#end</textarea>
+                        <input id="h-startdate-customfiled-id" class="text long-field" type="number" name="startDateCustomFieldId" value="$ganttConfig.getStartDateCustomFieldId()">
+                    </div>
+                    <div class="field-group">
+                        <label for="h-enddate-customfiled-id">
+                            endDataCustomFieldId
+                            <span class="aui-icon icon-required"></span>
+                            <span class="content">required</span>
+                        </label>
+                        <input id="h-enddate-customfiled-id" class="text long-field" type="number" name="endDateCustomFieldId" value="$ganttConfig.getEndDateCustomFieldId()">
+                    </div>
+                    <div class="field-group">
+                        <label for="h-jql">
+                            jql
+                            <span class="aui-icon icon-required"></span>
+                            <span class="content">required</span>
+                        </label>
+                        <textarea style="height: 300px; width: 500px" id="h-jql" name="jql" >$ganttConfig.getJqlQuery()</textarea>
                     </div>
                     <div class="buttons">
                         <input class="button" type="submit" value="Update">
-                        <a href="issuecrud">Cancel</a>
+                        <a href="config">Cancel</a>
                     </div>
                 </form>
             </div>

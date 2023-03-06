@@ -51,5 +51,4 @@ public class Test extends HttpServlet {
         resp.getWriter().write("<html><body>Hello World1</body></html>");
     }
 
-
 }

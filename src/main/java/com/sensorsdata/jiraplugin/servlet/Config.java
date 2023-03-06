@@ -6,6 +6,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.google.gson.Gson;
 import com.sensorsdata.jiraplugin.entity.GanttConfig;
+import net.java.ao.DBParam;
 import net.java.ao.EntityManager;
 import net.java.ao.builder.EntityManagerBuilder;
 import org.slf4j.Logger;
@@ -49,20 +50,25 @@ public class Config extends HttpServlet {
                 templateRenderer.render(NEW_ISSUE_TEMPLATE, context, response.getWriter());
                 break;
             case "edit":
-//                IssueService.IssueResult issueResult = issueService.getIssue(authenticationContext.getLoggedInUser(),
-//                    request.getParameter("key"));
-//                context.put("issue", issueResult.getIssue());
-                templateRenderer.render(EDIT_ISSUE_TEMPLATE, context, response.getWriter());
+                Integer id = Integer.valueOf(request.getParameter("id"));
+                if (id == null || id <= 0) {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                } else {
+                    GanttConfig ganttConfig = ao.get(com.sensorsdata.jiraplugin.entity.GanttConfig.class, id);
+                    context.put("ganttConfig", ganttConfig);
+                    templateRenderer.render(EDIT_ISSUE_TEMPLATE, context, response.getWriter());
+
+                }
                 break;
             default:
                 List<GanttConfig> ganttConfigList = Arrays.asList(ao.find(GanttConfig.class));
                 context.put("ganttConfigList", ganttConfigList);
-                for(GanttConfig ganttConfig : ganttConfigList){
-                    log.error("id is {}",ganttConfig.getID());
-                    log.error("name is {}",ganttConfig.getName());
-                    log.error("StartDateCustomFieldId is {}",ganttConfig.getStartDateCustomFieldId());
-                    log.error("EndDateCustomFieldId is {}",ganttConfig.getEndDateCustomFieldId());
-                    log.error("jql is {}",ganttConfig.getJqlQuery());
+                for (GanttConfig ganttConfig : ganttConfigList) {
+                    log.error("id is {}", ganttConfig.getID());
+                    log.error("name is {}", ganttConfig.getName());
+                    log.error("StartDateCustomFieldId is {}", ganttConfig.getStartDateCustomFieldId());
+                    log.error("EndDateCustomFieldId is {}", ganttConfig.getEndDateCustomFieldId());
+                    log.error("jql is {}", ganttConfig.getJqlQuery());
                 }
                 templateRenderer.render(LIST_ISSUES_TEMPLATE, context, response.getWriter());
         }
@@ -88,26 +94,30 @@ public class Config extends HttpServlet {
     private void handleIssueEdit(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 
-//        Map<String, Object> context = new HashMap<>();
-//
-//        IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
-//        issueInputParameters.setSummary(request.getParameter("summary"))
-//            .setDescription(request.getParameter("description"));
-//
-//        MutableIssue issue = issueService.getIssue(user, request.getParameter("key")).getIssue();
-//
-//        IssueService.UpdateValidationResult result =
-//            issueService.validateUpdate(user, issue.getId(), issueInputParameters);
-//
-//        if (result.getErrorCollection().hasAnyErrors()) {
-//            context.put("issue", issue);
-//            context.put("errors", result.getErrorCollection().getErrors());
-//            response.setContentType("text/html;charset=utf-8");
-//            templateRenderer.render(EDIT_ISSUE_TEMPLATE, context, response.getWriter());
-//        } else {
-//            issueService.update(user, result);
-//            response.sendRedirect("issuecrud");
-//        }
+        Integer id = Integer.valueOf(request.getParameter("id"));
+        if (id == null || id <= 0) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        } else {
+            GanttConfig ganttConfig = ao.get(com.sensorsdata.jiraplugin.entity.GanttConfig.class, id);
+
+            String name = request.getParameter("name");
+            Long startDateCustomFieldId = Long.valueOf(request.getParameter("startDateCustomFieldId"));
+            Long endDateCustomFieldId = Long.valueOf(request.getParameter("endDateCustomFieldId"));
+            String jql = request.getParameter("jql");
+
+            log.error("name is {}", name);
+            log.error("startDateCustomFieldId is {}", startDateCustomFieldId);
+            log.error("endDateCustomFieldId is {}", endDateCustomFieldId);
+            log.error("jql is {}", jql);
+
+            ganttConfig.setName(name);
+            ganttConfig.setStartDateCustomFieldId(startDateCustomFieldId);
+            ganttConfig.setEndDateCustomFieldId(endDateCustomFieldId);
+            ganttConfig.setJqlQuery(jql);
+            ganttConfig.save();
+            response.sendRedirect("config");
+
+        }
     }
 
     private void handleIssueCreation(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -120,15 +130,15 @@ public class Config extends HttpServlet {
             String paramValue = request.getParameter(paramName);
             log.error(paramName + " = " + paramValue);
         }
-        String  name = request.getParameter("name");
+        String name = request.getParameter("name");
         Long startDateCustomFieldId = Long.valueOf(request.getParameter("startDateCustomFieldId"));
         Long endDateCustomFieldId = Long.valueOf(request.getParameter("endDateCustomFieldId"));
         String jql = request.getParameter("jql");
 
-        log.error("name is {}",name);
-        log.error("startDateCustomFieldId is {}",startDateCustomFieldId);
-        log.error("endDateCustomFieldId is {}",endDateCustomFieldId);
-        log.error("jql is {}",jql);
+        log.error("name is {}", name);
+        log.error("startDateCustomFieldId is {}", startDateCustomFieldId);
+        log.error("endDateCustomFieldId is {}", endDateCustomFieldId);
+        log.error("jql is {}", jql);
 
         final GanttConfig ganttConfig = ao.create(GanttConfig.class); // (2)
         ganttConfig.setName(name); // (3)
@@ -145,16 +155,16 @@ public class Config extends HttpServlet {
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String respStr;
         Integer id = Integer.valueOf(request.getParameter("id"));
-        if(id == null || id <= 0){
+        if (id == null || id <= 0) {
             respStr = "{ \"success\" : \"false\", error: \"id is empty\"}";
-        }else{
+        } else {
 
 
             GanttConfig ganttConfig = ao.get(com.sensorsdata.jiraplugin.entity.GanttConfig.class, id);
-            if(ganttConfig != null){
+            if (ganttConfig != null) {
                 ao.delete(ganttConfig);
                 respStr = "{ \"success\" : \"true\" }";
-            }else{
+            } else {
                 respStr = "{ \"success\": \"false\", error:  \"can not find by id\" }";
 
             }

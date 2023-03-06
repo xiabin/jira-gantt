@@ -1,5 +1,6 @@
 package com.sensorsdata.jiraplugin.servlet;
 
+import com.atlassian.activeobjects.external.ActiveObjects;
 import com.atlassian.jira.bc.issue.IssueService;
 import com.atlassian.jira.bc.issue.search.SearchService;
 import com.atlassian.jira.component.ComponentAccessor;
@@ -21,11 +22,12 @@ import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.json.JSONException;
 import com.atlassian.jira.util.json.JSONObject;
 import com.atlassian.jira.web.bean.PagerFilter;
+import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.query.Query;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.webresource.api.assembler.PageBuilderService;
-import com.google.gson.Gson;
+import com.sensorsdata.jiraplugin.entity.GanttConfig;
 import com.sensorsdata.jiraplugin.entity.GanttCustomFiled;
 import com.sensorsdata.jiraplugin.entity.GanttIssue;
 import org.slf4j.Logger;
@@ -62,12 +64,15 @@ public class Gantt extends HttpServlet {
     @JiraImport
     private JiraAuthenticationContext authenticationContext;
 
-    public Gantt(TemplateRenderer templateRenderer, PageBuilderService pageBuilderService, SearchService searchService, IssueService issueService, JiraAuthenticationContext authenticationContext) {
+    @ComponentImport
+    private final ActiveObjects ao;
+    public Gantt(TemplateRenderer templateRenderer, PageBuilderService pageBuilderService, SearchService searchService, IssueService issueService, JiraAuthenticationContext authenticationContext, ActiveObjects ao) {
         this.templateRenderer = templateRenderer;
         this.pageBuilderService = pageBuilderService;
         this.searchService = searchService;
         this.authenticationContext = authenticationContext;
         this.issueService = issueService;
+        this.ao = ao;
     }
 
     @Override
@@ -78,7 +83,6 @@ public class Gantt extends HttpServlet {
         ApplicationUser user = authenticationContext.getLoggedInUser();
         log.info("user is {}", user.toString());
         Map<String, Object> context = new HashMap<>();
-
         IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
         String key = req.getParameter("key");
         log.info("Key is {}", key);
@@ -161,14 +165,27 @@ public class Gantt extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html;charset=utf-8");
         Map<String, Object> context = new HashMap<>();
+        Integer id = Integer.valueOf(request.getParameter("id"));
 
-        String jql = request.getParameter("jql");
         // 检查参数是否为空
-        if (jql == null || jql.trim().isEmpty()) {
+        if (id == null || id <= 0 ) {
             // 参数为空，抛出异常
-            throw new IllegalArgumentException("jql不能为空");
+            throw new IllegalArgumentException("id 不能为空");
         }
-        log.info("jql:{}", jql);
+
+        GanttConfig ganttConfig = ao.get(GanttConfig.class,id);
+        if(ganttConfig == null){
+            throw new IllegalArgumentException("ganttConfig is null");
+        }
+        long startDateCustomFieldId = ganttConfig.getStartDateCustomFieldId();
+        long endDateCustomFieldId = ganttConfig.getEndDateCustomFieldId();
+        String jql = ganttConfig.getJqlQuery();
+        log.info("startDateCustomFieldId is {}", startDateCustomFieldId);
+        log.info("endDateCustomFieldId is {}", endDateCustomFieldId);
+        log.info("jql is {}", jql);
+
+
+
         pageBuilderService.assembler().resources().requireWebResource("com.sensorsdata.jiraplugin.gantt:gantt-resources");
         List<Issue> issues = null;
         try {
@@ -200,8 +217,8 @@ public class Gantt extends HttpServlet {
 
             ganttIssue.setStartDate(new GanttCustomFiled());
             ganttIssue.setEndDate(new GanttCustomFiled());
-            ganttIssue.getStartDate().setCustomFiledId(10000L);
-            ganttIssue.getEndDate().setCustomFiledId(10001L);
+            ganttIssue.getStartDate().setCustomFiledId(startDateCustomFieldId);
+            ganttIssue.getEndDate().setCustomFiledId(endDateCustomFieldId);
 
             CustomField customField = ComponentAccessor.getCustomFieldManager().getCustomFieldObject(ganttIssue.getStartDate().getCustomFiledId());
             if (customField != null) {
@@ -259,6 +276,7 @@ public class Gantt extends HttpServlet {
         ganttIssueList = this.flattenTree(ganttIssueTree);
 
         context.put("ganttIssueList", ganttIssueList);
+        context.put("name", ganttConfig.getName());
 
 
         String templatePath = "/templates/gantt.vm";
