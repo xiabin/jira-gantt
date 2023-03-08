@@ -27,6 +27,7 @@ import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.query.Query;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.webresource.api.assembler.PageBuilderService;
+import com.google.gson.Gson;
 import com.sensorsdata.jiraplugin.entity.GanttConfig;
 import com.sensorsdata.jiraplugin.entity.GanttCustomFiled;
 import com.sensorsdata.jiraplugin.entity.GanttIssue;
@@ -87,14 +88,19 @@ public class Gantt extends HttpServlet {
         String key = req.getParameter("key");
         log.info("Key is {}", key);
 
+        Integer config = Integer.valueOf(req.getParameter("config"));
+        if (config == null || config <= 0) {
+            // 参数为空，抛出异常
+            throw new IllegalArgumentException("config 不合法");
+        }
+        GanttConfig ganttConfig = ao.get(com.sensorsdata.jiraplugin.entity.GanttConfig.class, config);
+
         MutableIssue mutableIssue = issueService.getIssue(user, key).getIssue();
 
-        Long startDateNameCustomFiledId = Long.valueOf(req.getParameter("startDateCustomFileId"));
-        log.info("startDateNameCustomFiledId is {}", startDateNameCustomFiledId);
+        Long startDateNameCustomFiledId = ganttConfig.getStartDateCustomFieldId();
 
 
-        Long endDateNameCustomFiledId = Long.valueOf(req.getParameter("endDateNameCustomFiledId"));
-        log.info("endDateNameCustomFiledId is {}", endDateNameCustomFiledId);
+        Long endDateNameCustomFiledId = ganttConfig.getEndDateCustomFieldId();
 
         Long startDateTimestamp = Long.valueOf(req.getParameter("startDate"));
         // 检查参数是否为空
@@ -276,6 +282,8 @@ public class Gantt extends HttpServlet {
         ganttIssueList = this.flattenTree(ganttIssueTree);
 
         context.put("ganttIssueList", ganttIssueList);
+        context.put("ganttIssueListJson", new Gson().toJson(ganttIssueList));
+
         context.put("name", ganttConfig.getName());
 
 
