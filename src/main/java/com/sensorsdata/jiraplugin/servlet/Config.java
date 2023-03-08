@@ -64,11 +64,11 @@ public class Config extends HttpServlet {
                 List<GanttConfig> ganttConfigList = Arrays.asList(ao.find(GanttConfig.class));
                 context.put("ganttConfigList", ganttConfigList);
                 for (GanttConfig ganttConfig : ganttConfigList) {
-                    log.error("id is {}", ganttConfig.getID());
-                    log.error("name is {}", ganttConfig.getName());
-                    log.error("StartDateCustomFieldId is {}", ganttConfig.getStartDateCustomFieldId());
-                    log.error("EndDateCustomFieldId is {}", ganttConfig.getEndDateCustomFieldId());
-                    log.error("jql is {}", ganttConfig.getJqlQuery());
+                    log.info("id is {}", ganttConfig.getID());
+                    log.info("name is {}", ganttConfig.getName());
+                    log.info("StartDateCustomFieldId is {}", ganttConfig.getStartDateCustomFieldId());
+                    log.info("EndDateCustomFieldId is {}", ganttConfig.getEndDateCustomFieldId());
+                    log.info("jql is {}", ganttConfig.getJqlQuery());
                 }
                 templateRenderer.render(LIST_ISSUES_TEMPLATE, context, response.getWriter());
         }
@@ -105,10 +105,10 @@ public class Config extends HttpServlet {
             Long endDateCustomFieldId = Long.valueOf(request.getParameter("endDateCustomFieldId"));
             String jql = request.getParameter("jql");
 
-            log.error("name is {}", name);
-            log.error("startDateCustomFieldId is {}", startDateCustomFieldId);
-            log.error("endDateCustomFieldId is {}", endDateCustomFieldId);
-            log.error("jql is {}", jql);
+            log.info("name is {}", name);
+            log.info("startDateCustomFieldId is {}", startDateCustomFieldId);
+            log.info("endDateCustomFieldId is {}", endDateCustomFieldId);
+            log.info("jql is {}", jql);
 
             ganttConfig.setName(name);
             ganttConfig.setStartDateCustomFieldId(startDateCustomFieldId);
@@ -128,17 +128,17 @@ public class Config extends HttpServlet {
         while (parameterNames.hasMoreElements()) {
             String paramName = parameterNames.nextElement();
             String paramValue = request.getParameter(paramName);
-            log.error(paramName + " = " + paramValue);
+            log.info(paramName + " = " + paramValue);
         }
         String name = request.getParameter("name");
         Long startDateCustomFieldId = Long.valueOf(request.getParameter("startDateCustomFieldId"));
         Long endDateCustomFieldId = Long.valueOf(request.getParameter("endDateCustomFieldId"));
         String jql = request.getParameter("jql");
 
-        log.error("name is {}", name);
-        log.error("startDateCustomFieldId is {}", startDateCustomFieldId);
-        log.error("endDateCustomFieldId is {}", endDateCustomFieldId);
-        log.error("jql is {}", jql);
+        log.info("name is {}", name);
+        log.info("startDateCustomFieldId is {}", startDateCustomFieldId);
+        log.info("endDateCustomFieldId is {}", endDateCustomFieldId);
+        log.info("jql is {}", jql);
 
         final GanttConfig ganttConfig = ao.create(GanttConfig.class); // (2)
         ganttConfig.setName(name); // (3)

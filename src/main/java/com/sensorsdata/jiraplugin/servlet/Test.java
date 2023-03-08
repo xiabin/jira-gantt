@@ -30,10 +30,6 @@ public class Test extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        for (GanttConfig ganttConfig : ao.find(GanttConfig.class)) // (2)
-        {
-            log.error("ganttConfig is {}", ganttConfig.getJqlQuery())   ;
-        }
         resp.setContentType("text/html");
         resp.getWriter().write("<html><body>Hello World1</body></html>");
     }
@@ -44,7 +40,7 @@ public class Test extends HttpServlet {
         final GanttConfig ganttConfig = ao.create(GanttConfig.class); // (2)
         ganttConfig.setJqlQuery(new LocalDateTime().toString()); // (3)
         ganttConfig.save(); // (4)
-//        log.error(ganttConfig.getJqlQuery());
+//        log.info(ganttConfig.getJqlQuery());
 
 
         resp.setContentType("text/html");

@@ -136,7 +136,7 @@ public class Gantt extends HttpServlet {
             issueInputParameters.addCustomFieldValue(startCustomField.getId(), startFormattedDate);
             issueInputParameters.addCustomFieldValue(endCustomField.getId(), endFormattedDate);
         } else {
-            log.error("startCustomField or endCustomField is null");
+            log.info("startCustomField or endCustomField is null");
         }
 
 
@@ -219,8 +219,10 @@ public class Gantt extends HttpServlet {
                 ganttIssue.setAssignee(issue.getAssignee().getDisplayName());
             }
             CustomFieldManager customFieldManager = ComponentAccessor.getCustomFieldManager();
+            String baseBrowseUrl = ComponentAccessor.getApplicationProperties().getString("jira.baseurl"); // 获取 Jira 实例的基本 URL
+            String issueBrowseUrl = baseBrowseUrl + "/browse/" + issue.getKey(); // 构建问题的完整链接
 
-
+            ganttIssue.setIssueBrowseUrl(issueBrowseUrl);
             ganttIssue.setStartDate(new GanttCustomFiled());
             ganttIssue.setEndDate(new GanttCustomFiled());
             ganttIssue.getStartDate().setCustomFiledId(startDateCustomFieldId);
@@ -247,27 +249,6 @@ public class Gantt extends HttpServlet {
                 throw new NullPointerException(String.format("customField is  undefine %l", ganttIssue.getEndDate().getCustomFiledId()));
             }
 
-//            String customFieldName = ComponentAccessor.getJiraAuthenticationContext().getI18nHelper().getText("StartDate", userLocale);
-//            CustomField customField = ComponentAccessor.getCustomFieldManager().getCustomFieldObjectsByName(customFieldName).stream()
-//                .findFirst()
-//                .orElse(null);
-//            if (customField != null) {
-//                Object customFieldValue = issue.getCustomFieldValue(customField);
-//                ganttIssue.setStartDate(customFieldValue.toString());
-//            } else {
-//                throw new NullPointerException(String.format("customFieldName is StartDate userLocale is %s after translation is %s", userLocale.toString(), customFieldName));
-//            }
-//
-//            customFieldName = ComponentAccessor.getJiraAuthenticationContext().getI18nHelper().getText("EndDate", userLocale);
-//            customField = ComponentAccessor.getCustomFieldManager().getCustomFieldObjectsByName(customFieldName).stream()
-//                .findFirst()
-//                .orElse(null);
-//            if (customField != null) {
-//                Object customFieldValue = issue.getCustomFieldValue(customField);
-//                ganttIssue.setEndDate(customFieldValue.toString());
-//            } else {
-//                throw new NullPointerException(String.format("customFieldName is EndDate userLocale is %s after translation is %s", userLocale.toString(), customFieldName));
-//            }
             if (childParentMap.containsKey(ganttIssue.getKey())) {
                 ganttIssue.setDependency(childParentMap.get(ganttIssue.getKey()));
             } else {

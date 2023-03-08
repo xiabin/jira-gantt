@@ -19,6 +19,7 @@ public class GanttIssue {
 
     private String dependency;
 
+    private String issueBrowseUrl;
 
     private List<GanttIssue> children;
 
