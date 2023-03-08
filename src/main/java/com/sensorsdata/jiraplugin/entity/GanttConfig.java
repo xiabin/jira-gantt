@@ -21,4 +21,7 @@ public interface GanttConfig extends Entity {
     String getName();
     void setName(String name);
 
+    Long getLinkTypeId();
+    void setLinkTypeId(Long linkTypeId);
+
 }

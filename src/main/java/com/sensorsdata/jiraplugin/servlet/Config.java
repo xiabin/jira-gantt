@@ -1,6 +1,7 @@
 package com.sensorsdata.jiraplugin.servlet;
 
 import com.atlassian.activeobjects.external.ActiveObjects;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -62,14 +63,9 @@ public class Config extends HttpServlet {
                 break;
             default:
                 List<GanttConfig> ganttConfigList = Arrays.asList(ao.find(GanttConfig.class));
+                String jiraBaseUrl = ComponentAccessor.getApplicationProperties().getString("jira.baseurl"); // 获取 Jira 实例的基本 URL
+                context.put("jiraBaseUrl",jiraBaseUrl);
                 context.put("ganttConfigList", ganttConfigList);
-                for (GanttConfig ganttConfig : ganttConfigList) {
-                    log.info("id is {}", ganttConfig.getID());
-                    log.info("name is {}", ganttConfig.getName());
-                    log.info("StartDateCustomFieldId is {}", ganttConfig.getStartDateCustomFieldId());
-                    log.info("EndDateCustomFieldId is {}", ganttConfig.getEndDateCustomFieldId());
-                    log.info("jql is {}", ganttConfig.getJqlQuery());
-                }
                 templateRenderer.render(LIST_ISSUES_TEMPLATE, context, response.getWriter());
         }
     }
@@ -81,17 +77,17 @@ public class Config extends HttpServlet {
 
         switch (actionType) {
             case "edit":
-                handleIssueEdit(request, response);
+                handleConfigEdit(request, response);
                 break;
             case "new":
-                handleIssueCreation(request, response);
+                handleConfigCreation(request, response);
                 break;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
-    private void handleIssueEdit(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void handleConfigEdit(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 
         Integer id = Integer.valueOf(request.getParameter("id"));
@@ -104,6 +100,7 @@ public class Config extends HttpServlet {
             Long startDateCustomFieldId = Long.valueOf(request.getParameter("startDateCustomFieldId"));
             Long endDateCustomFieldId = Long.valueOf(request.getParameter("endDateCustomFieldId"));
             String jql = request.getParameter("jql");
+            Long linkTypeId = Long.valueOf(request.getParameter("linkTypeId"));
 
             log.info("name is {}", name);
             log.info("startDateCustomFieldId is {}", startDateCustomFieldId);
@@ -114,13 +111,14 @@ public class Config extends HttpServlet {
             ganttConfig.setStartDateCustomFieldId(startDateCustomFieldId);
             ganttConfig.setEndDateCustomFieldId(endDateCustomFieldId);
             ganttConfig.setJqlQuery(jql);
+            ganttConfig.setLinkTypeId(linkTypeId);
             ganttConfig.save();
             response.sendRedirect("config");
 
         }
     }
 
-    private void handleIssueCreation(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void handleConfigCreation(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         Enumeration<String> parameterNames = request.getParameterNames();
 
@@ -134,6 +132,7 @@ public class Config extends HttpServlet {
         Long startDateCustomFieldId = Long.valueOf(request.getParameter("startDateCustomFieldId"));
         Long endDateCustomFieldId = Long.valueOf(request.getParameter("endDateCustomFieldId"));
         String jql = request.getParameter("jql");
+        Long linkTypeId = Long.valueOf(request.getParameter("linkTypeId"));
 
         log.info("name is {}", name);
         log.info("startDateCustomFieldId is {}", startDateCustomFieldId);
@@ -145,6 +144,7 @@ public class Config extends HttpServlet {
         ganttConfig.setStartDateCustomFieldId(startDateCustomFieldId);
         ganttConfig.setEndDateCustomFieldId(endDateCustomFieldId);
         ganttConfig.setJqlQuery(jql);
+        ganttConfig.setLinkTypeId(linkTypeId);
         ganttConfig.save(); // (4)
         response.sendRedirect("config");
 

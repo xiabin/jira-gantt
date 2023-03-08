@@ -33,6 +33,6 @@
   </ao>  
   <servlet name="Config" i18n-name-key="cofig.name" key="config" class="com.sensorsdata.jiraplugin.servlet.Config">
     <description key="my-servlet.description">Config Gantt</description>  
-    <url-pattern>/config</url-pattern> 
+    <url-pattern>/gantt/config</url-pattern>
   </servlet>
 </atlassian-plugin>

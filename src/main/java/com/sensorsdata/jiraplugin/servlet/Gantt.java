@@ -88,6 +88,11 @@ public class Gantt extends HttpServlet {
         String key = req.getParameter("key");
         log.info("Key is {}", key);
 
+
+
+        String summary = req.getParameter("summary");
+        log.info("summary is {}", summary);
+
         Integer config = Integer.valueOf(req.getParameter("config"));
         if (config == null || config <= 0) {
             // 参数为空，抛出异常
@@ -139,6 +144,9 @@ public class Gantt extends HttpServlet {
             log.info("startCustomField or endCustomField is null");
         }
 
+        if(summary != null || !summary.isEmpty()){
+            issueInputParameters.setSummary(summary);
+        }
 
         IssueService.UpdateValidationResult result = issueService.validateUpdate(user, mutableIssue.getId(), issueInputParameters);
 
@@ -202,10 +210,11 @@ public class Gantt extends HttpServlet {
 
         List<GanttIssue> ganttIssueList = new ArrayList<>();
 
-        Locale userLocale = ComponentAccessor.getJiraAuthenticationContext().getLocale();
 
-        HashMap<String, String> childParentMap = this.getParentChildRelations(issues);
+        HashMap<String, String> childParentMap = this.getParentChildRelations(issues,ganttConfig.getLinkTypeId());
         log.info("issues is {}", issues.toString());
+        String baseBrowseUrl = ComponentAccessor.getApplicationProperties().getString("jira.baseurl"); // 获取 Jira 实例的基本 URL
+
         for (Issue issue : issues) {
 
             log.info("key is {}", issue.getKey());
@@ -218,8 +227,6 @@ public class Gantt extends HttpServlet {
             if (assignee != null) {
                 ganttIssue.setAssignee(issue.getAssignee().getDisplayName());
             }
-            CustomFieldManager customFieldManager = ComponentAccessor.getCustomFieldManager();
-            String baseBrowseUrl = ComponentAccessor.getApplicationProperties().getString("jira.baseurl"); // 获取 Jira 实例的基本 URL
             String issueBrowseUrl = baseBrowseUrl + "/browse/" + issue.getKey(); // 构建问题的完整链接
 
             ganttIssue.setIssueBrowseUrl(issueBrowseUrl);
@@ -298,9 +305,8 @@ public class Gantt extends HttpServlet {
     }
 
 
-    private HashMap<String, String> getParentChildRelations(List<Issue> issues) {
+    private HashMap<String, String> getParentChildRelations(List<Issue> issues,Long linkTypeId) {
 
-        String linkTypeName = "Parent Child";
         HashMap<String, String> childParentMap = new HashMap<>();
         IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager();
 
@@ -311,7 +317,7 @@ public class Gantt extends HttpServlet {
             }
             for (IssueLink link : inwardLinks) {
                 log.info("{} link type name is {}", issue.toString(), link.getIssueLinkType().getName());
-                if (link.getIssueLinkType().getName().equals(linkTypeName)) {
+                if (link.getIssueLinkType().getId().equals(linkTypeId)) {
                     Issue linkedIssue = link.getSourceObject();
                     childParentMap.put(issue.getKey(), linkedIssue.getKey());
                 }

@@ -36,6 +36,15 @@
                     </label>
                     <input id="h-enddate-customfiled-id" class="text long-field" type="number" name="endDateCustomFieldId">
                 </div>
+
+                <div class="field-group">
+                    <label for="h-link-type-id">
+                        linkTypeId
+                        <span class="aui-icon icon-required"></span>
+                        <span class="content">required</span>
+                    </label>
+                    <input id="h-link-type-id" class="text long-field" type="number" name="linkTypeId">
+                </div>
                 <div class="field-group">
                     <label for="h-jql">
                         jql

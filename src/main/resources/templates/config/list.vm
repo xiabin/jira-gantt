@@ -48,6 +48,7 @@
                         <th>Name</th>
                         <th>StartDateCustomFieldId</th>
                         <th>EndDateCustomFieldId</th>
+                        <th>LinkTypeId</th>
                         <th>JqlQuery</th>
                         <th></th>
                     </tr>
@@ -57,7 +58,7 @@
                         <tr class="issue-line">
                             <td >$ganttConfig.getID()</td>
                             <td >
-                                <a href="gantt?id=$ganttConfig.getID()">$ganttConfig.getName()</a>
+                                <a href="$jiraBaseUrl/plugins/servlet/gantt?id=$ganttConfig.getID()">$ganttConfig.getName()</a>
                             </td>
                             <td>
                                 #if($ganttConfig.getStartDateCustomFieldId())
@@ -67,6 +68,11 @@
                             <td>
                                 #if($ganttConfig.getEndDateCustomFieldId())
                                     $ganttConfig.getEndDateCustomFieldId()
+                                #end
+                            </td>
+                            <td>
+                                #if($ganttConfig.getLinkTypeId())
+                                    $ganttConfig.getLinkTypeId()
                                 #end
                             </td>
                             <td>
