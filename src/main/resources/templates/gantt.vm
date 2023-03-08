@@ -223,40 +223,18 @@
 
         gantt.ext.zoom.init(zoomConfig);
 
-        gantt.ext.zoom.setLevel("day");
+        gantt.ext.zoom.setLevel("week");
 
         gantt.$zoomToFit = false;
 
 
-
-
-
-        gantt.config.work_time = true;
-        gantt.config.min_column_width = 60;
-        gantt.config.duration_unit = "day";
-        gantt.config.scale_height = 20 * 3;
-        gantt.config.row_height = 30;
-
-        var weekScaleTemplate = function (date) {
-            var dateToStr = gantt.date.date_to_str("%d %M");
-            var weekNum = gantt.date.date_to_str("(week %W)");
-            var endDate = gantt.date.add(gantt.date.add(date, 1, "week"), -1, "day");
-            return dateToStr(date) + " - " + dateToStr(endDate) + " " + weekNum(date);
-        };
-
-        gantt.config.scales = [
-            {unit: "month", step: 1, format: "%F, %Y"},
-            {unit: "week", step: 1, format: weekScaleTemplate},
-            {unit: "day", step: 1, format: "%D, %d"}
+        // default columns definition
+        gantt.config.columns=[
+            {name:"text",       label:"Task name",  tree:true, width:'*' },
+            {name:"assignee", label:"Assignee", align: "center" },
+            {name:"start_date", label:"Start time", align: "center" },
+            {name:"duration",   label:"Duration",   align: "center" },
         ];
-
-        gantt.templates.timeline_cell_class = function (task, date) {
-            if (!gantt.isWorkTime(date))
-                return "week_end";
-            return "";
-        };
-
-
 
         var ganttIssueList = JSON.parse(jQuery("#issue-data").html());
         console.log(ganttIssueList);
@@ -307,6 +285,7 @@
                 start_date: ganttIssueList[i].startDate.value,
                 end_date: ganttIssueList[i].endDate.value,
                 parent: ganttIssueList[i].dependency == 'root'? 0 :ganttIssueList[i].dependency,
+                assignee:ganttIssueList[i].assignee ?ganttIssueList[i].assignee : '未分配',
                 open:  ganttIssueList[i].dependency == 'root'? true : false
 
         });
