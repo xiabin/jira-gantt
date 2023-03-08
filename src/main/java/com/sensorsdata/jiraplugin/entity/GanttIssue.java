@@ -23,6 +23,9 @@ public class GanttIssue {
 
     private List<GanttIssue> children;
 
+    private Boolean isParent;
+
+
 
     public void addChild(GanttIssue ganttIssue) {
         if (this.children == null) {

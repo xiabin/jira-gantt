@@ -235,16 +235,15 @@
 
         gantt.$zoomToFit = false;
 
-        gantt.config.grid_width = 500;
+        gantt.config.grid_width = 600;
 
         // default columns definition
         gantt.config.columns=[
-            {name:"text",       label:"Task name",  tree:true, width:"*", min_width: 150, max_width:300,template:function(obj){
-                console.log(obj);
+            {name:"text",       label:"Task name",  tree:true, width:"*", min_width: 150, max_width:500,template:function(obj){
                     return '<a target="_blank" href="'+obj.issueBrowseUrl +'">' + obj.text +'</a>'} },
-            {name:"assignee", label:"Assignee", align: "center" },
-            {name:"start_date", label:"Start time", align: "center" },
-            {name:"duration",   label:"Duration",   align: "center",width:"*",  max_width:100 },
+            {name:"assignee", label:"Assignee", align: "center",width:"*",  max_width:80},
+            {name:"start_date", label:"Start time", align: "center",width:"*",  max_width:80},
+            {name:"duration",   label:"Duration",   align: "center",width:"*",  max_width:50 },
         ];
 
         var ganttIssueList = JSON.parse(jQuery("#issue-data").html());
@@ -298,8 +297,8 @@
             data.push({
                 id: ganttIssueList[i].key,
                 text:  ganttIssueList[i].summary ,
-                start_date: ganttIssueList[i].startDate.value,
-                end_date: ganttIssueList[i].endDate.value,
+                start_date: ganttIssueList[i].isParent ? null : ganttIssueList[i].startDate.value,
+                end_date: ganttIssueList[i].isParent ? null : ganttIssueList[i].endDate.value,
                 parent: ganttIssueList[i].dependency == 'root'? 0 :ganttIssueList[i].dependency,
                 assignee:ganttIssueList[i].assignee ?ganttIssueList[i].assignee : '未分配',
                 issueBrowseUrl:ganttIssueList[i].issueBrowseUrl,
@@ -311,16 +310,6 @@
         console.log(data);
 
         gantt.init("gantt_here");
-        // gantt.parse({
-        //     data: [
-        //         {id: "TESt-1", text: "Project #1", start_date: null, duration: null, parent:0, progress: 0, open: true},
-        //         {id:  "TESt-2", text: "Task #1", start_date: "2023-03-01 00:00", duration:5, parent: "TESt-1", progress: 1},
-        //         {id:  "TESt-3", text: "Task #2", start_date: "2023-03-06 00:00", duration:2, parent: "TESt-1", progress: 0.5},
-        //         {id:  "TESt-4", text: "Task #3", start_date: null, duration: null, parent: "TESt-1", progress: 0.8, open: true},
-        //         {id:  "TESt-5", text: "Task #3.1", start_date: "2023-03-09 00:00", duration:2, parent: "TESt-4", progress: 0.2},
-        //         {id:  "TESt-6", text: "Task #3.2", start_date: "2023-03-11 00:00", duration:1, parent: "TESt-4", progress: 0}
-        //     ]
-        // });
         gantt.parse({
             data: data,
             links: []
@@ -329,6 +318,9 @@
 
 
         gantt.attachEvent("onAfterTaskDrag", function (id, mode) {
+            gantt.eachParent(function(task){
+                console.log(task.text);
+            }, id);
             var task = gantt.getTask(id);
             if (mode == gantt.config.drag_mode.progress) {
                 var pr = Math.floor(task.progress * 100 * 10) / 10;
@@ -337,7 +329,6 @@
                 var s = task.start_date.valueOf();
                 var e = task.end_date.valueOf();
                 console.log(task.text + " starts at " + s + " and ends at " + e);
-                console.log(task);
                 jQuery.ajax({
                     "url": "gantt",
                     "method": "POST",

@@ -144,7 +144,7 @@ public class Gantt extends HttpServlet {
             log.info("startCustomField or endCustomField is null");
         }
 
-        if(summary != null || !summary.isEmpty()){
+        if(summary != null && !summary.isEmpty()){
             issueInputParameters.setSummary(summary);
         }
 
@@ -334,11 +334,6 @@ public class Gantt extends HttpServlet {
         for (GanttIssue ganttIssue : ganttIssueList) {
             List<GanttIssue> children = parentChildMap.computeIfAbsent(ganttIssue.getDependency(), k -> new ArrayList<>());
             children.add(ganttIssue);
-
-            //排序下 children 这里还有优化空间 可以等映射关系构建完了再排序 而不是每次都排序 TreeSet可以解决
-            //todo 优化
-            Collections.sort(children, Comparator.comparingLong(GanttIssue::getId));
-
         }
         List<GanttIssue> rootList = parentChildMap.get("root");
 
@@ -353,10 +348,13 @@ public class Gantt extends HttpServlet {
     private void buildTreeRecursively(GanttIssue parenGanttIssue, Map<String, List<GanttIssue>> parentChildMap) {
         List<GanttIssue> children = parentChildMap.get(parenGanttIssue.getKey());
         if (children != null) {
+            parenGanttIssue.setIsParent(true);
             parenGanttIssue.setChildren(children);
             for (GanttIssue child : children) {
                 buildTreeRecursively(child, parentChildMap);
             }
+        }else{
+            parenGanttIssue.setIsParent(false);
         }
     }
 
@@ -365,6 +363,7 @@ public class Gantt extends HttpServlet {
         for (GanttIssue node : ganttIssueList) {
             flattened.add(node);
             if (node.getChildren() != null && !node.getChildren().isEmpty()) {
+                Collections.sort(node.getChildren(), Comparator.comparingLong(GanttIssue::getId));
                 flattened.addAll(flattenTree(node.getChildren()));
             }
         }
