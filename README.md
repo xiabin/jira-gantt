@@ -4,7 +4,6 @@
 3. issues 之间的父子关系 使用了 jira 的「issue link」
 4. gantt 图需要用到的开始结束时间使用了两个 jira 的自定义字段
 5. gantt 图使用 https://github.com/DHTMLX/gantt
-6. 
 
 # 功能点
 - [x] 配置管理；配置 gantt 的「名称」「开始时间自定义字段 id」「结束时间自定义字段 id」「issue link id」「JQL」；实现对配置的增删改查
@@ -22,8 +21,14 @@
 - [ ] 支持 全局的「Expand/Collapse」
 
 
+# Getting started
+1. 参考 https://developer.atlassian.com/server/framework/atlassian-sdk/downloads/ 搭建开发环境
+2. 参考 https://developer.atlassian.com/server/framework/atlassian-sdk/create-a-helloworld-plugin-project/ 创建第一次插件
+3. 参考 https://developer.atlassian.com/server/jira/platform/creating-a-jira-issue-crud-servlet-and-issue-search/ 进行插件开发
+
 # 参考文档
-1. https://developer.atlassian.com/server/framework/atlassian-sdk/product-specific-tutorials/
+1. https://developer.atlassian.com/server/framework/atlassian-sdk/
+2. https://developer.atlassian.com/server/framework/atlassian-sdk/product-specific-tutorials/
 2. https://developer.atlassian.com/server/jira/platform/tutorials_and_guides/
 4. https://codeclou.github.io/kitchen-duty-plugin-for-atlassian-jira/tutorial/06-step-03-planning-page--user-search-js-controller/
 5. https://developer.atlassian.com/server/framework/atlassian-sdk/getting-started-with-active-objects/#step-12--seed-the-database-with-some-test-data
