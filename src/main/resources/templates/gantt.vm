@@ -18,9 +18,9 @@
 </head>
 <body>
 <div class="gantt_control">
-    <button id="zoom_toggle" class='zoom_toggle' >Zoom to Fit</button>
-    <input id="zoom_in" type=button value="Zoom In" >
-    <input id="zoom_out" type=button value="Zoom Out" >
+    <button id="zoom_toggle" class='zoom_toggle'>Zoom to Fit</button>
+    <input id="zoom_in" type=button value="Zoom In">
+    <input id="zoom_out" type=button value="Zoom Out">
 </div>
 <div id="gantt_here" style='width:100%; height:100vh;'></div>
 
@@ -32,15 +32,16 @@
 <script>
     AJS.$(document).ready(function () {
 
-        jQuery("#zoom_toggle").click(function (){
+        jQuery("#zoom_toggle").click(function () {
             toggleMode(jQuery(this));
         });
-        jQuery("#zoom_in").click(function (){
+        jQuery("#zoom_in").click(function () {
             zoom_in();
         });
-        jQuery("#zoom_out").click(function (){
+        jQuery("#zoom_out").click(function () {
             zoom_out();
         });
+
         function toggleMode(toggle) {
             gantt.$zoomToFit = !gantt.$zoomToFit;
             if (gantt.$zoomToFit) {
@@ -78,9 +79,9 @@
 
             // restore the previous scroll position
             if (config.scroll_position) {
-                setTimeout(function(){
+                setTimeout(function () {
                     gantt.scrollTo(config.scroll_position.x, config.scroll_position.y)
-                },4)
+                }, 4)
             }
         }
 
@@ -91,7 +92,7 @@
                 scaleConfigs = zoomConfig.levels;
 
             for (var i = 0; i < scaleConfigs.length; i++) {
-                var columnCount = getUnitsBetween(project.start_date, project.end_date, scaleConfigs[i].scales[scaleConfigs[i].scales.length-1].unit, scaleConfigs[i].scales[0].step);
+                var columnCount = getUnitsBetween(project.start_date, project.end_date, scaleConfigs[i].scales[scaleConfigs[i].scales.length - 1].unit, scaleConfigs[i].scales[0].step);
                 if ((columnCount + 2) * gantt.config.min_column_width <= areaWidth) {
                     break;
                 }
@@ -118,12 +119,13 @@
             return units;
         }
 
-        function zoom_in(){
+        function zoom_in() {
             gantt.ext.zoom.zoomIn();
             gantt.$zoomToFit = false;
             document.querySelector(".zoom_toggle").innerHTML = "Zoom to Fit";
         }
-        function zoom_out(){
+
+        function zoom_out() {
             gantt.ext.zoom.zoomOut();
             gantt.$zoomToFit = false;
             document.querySelector(".zoom_toggle").innerHTML = "Zoom to Fit";
@@ -134,53 +136,57 @@
             levels: [
                 // hours
                 {
-                    name:"hour",
+                    name: "hour",
                     scale_height: 27,
-                    scales:[
-                        {unit:"day", step: 1, format:"%d %M"},
-                        {unit:"hour", step: 1, format:"%H:%i"},
+                    scales: [
+                        {unit: "day", step: 1, format: "%d %M"},
+                        {unit: "hour", step: 1, format: "%H:%i"},
                     ]
                 },
                 // days
                 {
-                    name:"day",
+                    name: "day",
                     scale_height: 27,
-                    scales:[
+                    scales: [
                         {unit: "day", step: 1, format: "%d %M"}
                     ]
                 },
                 // weeks
                 {
-                    name:"week",
+                    name: "week",
                     scale_height: 50,
-                    scales:[
-                        {unit: "week", step: 1, format: function (date) {
+                    scales: [
+                        {
+                            unit: "week", step: 1, format: function (date) {
                                 var dateToStr = gantt.date.date_to_str("%d %M");
                                 var endDate = gantt.date.add(date, -6, "day");
                                 var weekNum = gantt.date.date_to_str("%W")(date);
                                 return "#" + weekNum + ", " + dateToStr(date) + " - " + dateToStr(endDate);
-                            }},
+                            }
+                        },
                         {unit: "day", step: 1, format: "%j %D"}
                     ]
                 },
                 // months
                 {
-                    name:"month",
+                    name: "month",
                     scale_height: 50,
-                    scales:[
+                    scales: [
                         {unit: "month", step: 1, format: "%F, %Y"},
-                        {unit: "week", step: 1, format: function (date) {
+                        {
+                            unit: "week", step: 1, format: function (date) {
                                 var dateToStr = gantt.date.date_to_str("%d %M");
                                 var endDate = gantt.date.add(gantt.date.add(date, 1, "week"), -1, "day");
                                 return dateToStr(date) + " - " + dateToStr(endDate);
-                            }}
+                            }
+                        }
                     ]
                 },
                 // quarters
                 {
-                    name:"quarter",
+                    name: "quarter",
                     height: 50,
-                    scales:[
+                    scales: [
                         {
                             unit: "quarter", step: 3, format: function (date) {
                                 var dateToStr = gantt.date.date_to_str("%M %y");
@@ -193,35 +199,41 @@
                 },
                 // years
                 {
-                    name:"year",
+                    name: "year",
                     scale_height: 50,
-                    scales:[
-                        {unit: "year", step: 5, format: function (date) {
+                    scales: [
+                        {
+                            unit: "year", step: 5, format: function (date) {
                                 var dateToStr = gantt.date.date_to_str("%Y");
                                 var endDate = gantt.date.add(gantt.date.add(date, 5, "year"), -1, "day");
                                 return dateToStr(date) + " - " + dateToStr(endDate);
-                            }}
+                            }
+                        }
                     ]
                 },
                 // decades
                 {
-                    name:"year",
+                    name: "year",
                     scale_height: 50,
-                    scales:[
-                        {unit: "year", step: 100, format: function (date) {
+                    scales: [
+                        {
+                            unit: "year", step: 100, format: function (date) {
                                 var dateToStr = gantt.date.date_to_str("%Y");
                                 var endDate = gantt.date.add(gantt.date.add(date, 100, "year"), -1, "day");
                                 return dateToStr(date) + " - " + dateToStr(endDate);
-                            }},
-                        {unit: "year", step: 10, format: function (date) {
+                            }
+                        },
+                        {
+                            unit: "year", step: 10, format: function (date) {
                                 var dateToStr = gantt.date.date_to_str("%Y");
                                 var endDate = gantt.date.add(gantt.date.add(date, 10, "year"), -1, "day");
                                 return dateToStr(date) + " - " + dateToStr(endDate);
-                            }},
+                            }
+                        },
                     ]
                 },
             ],
-            element: function(){
+            element: function () {
                 return gantt.$root.querySelector(".gantt_task");
             }
         };
@@ -238,16 +250,24 @@
         gantt.config.grid_width = 600;
 
         // default columns definition
-        gantt.config.columns=[
-            {name:"text",       label:"Task name",  tree:true, width:"*", min_width: 150, max_width:500,template:function(obj){
-                    return '<a target="_blank" href="'+obj.issueBrowseUrl +'">' + obj.text +'</a>'} },
-            {name:"assignee", label:"Assignee", align: "center",width:"*",  max_width:80},
-            {name:"start_date", label:"Start time", align: "center",width:"*",  max_width:80},
-            {name:"duration",   label:"Duration",   align: "center",width:"*",  max_width:50 },
+        gantt.config.columns = [
+            {
+                name: "text",
+                label: "Task name",
+                tree: true,
+                width: "*",
+                min_width: 150,
+                max_width: 500,
+                template: function (obj) {
+                    return '<a target="_blank" href="' + obj.issueBrowseUrl + '">' + obj.text + '</a>'
+                }
+            },
+            {name: "assignee", label: "Assignee", align: "center", width: "*", max_width: 80},
+            {name: "start_date", label: "Start time", align: "center", width: "*", max_width: 80},
+            {name: "duration", label: "Duration", align: "center", width: "*", max_width: 50},
         ];
 
         var ganttIssueList = JSON.parse(jQuery("#issue-data").html());
-        console.log(ganttIssueList);
         gantt.config.date_format = "%Y-%m-%d %H:%i:%s";
 
         gantt.config.lightbox.sections = [
@@ -285,29 +305,25 @@
         //支持工作日结束
 
 
-
         gantt.config.buttons_left = ["gantt_save_btn"];
         gantt.config.buttons_right = ["gantt_cancel_btn"];
-
-
 
 
         var data = [];
         for (var i = 0; i < ganttIssueList.length; i++) {
             data.push({
                 id: ganttIssueList[i].key,
-                text:  ganttIssueList[i].summary ,
+                text: ganttIssueList[i].summary,
                 start_date: ganttIssueList[i].isParent ? null : ganttIssueList[i].startDate.value,
                 end_date: ganttIssueList[i].isParent ? null : ganttIssueList[i].endDate.value,
-                parent: ganttIssueList[i].dependency == 'root'? 0 :ganttIssueList[i].dependency,
-                assignee:ganttIssueList[i].assignee ?ganttIssueList[i].assignee : '未分配',
-                issueBrowseUrl:ganttIssueList[i].issueBrowseUrl,
-                open:  ganttIssueList[i].dependency == 'root'? true : false
+                parent: ganttIssueList[i].dependency == 'root' ? 0 : ganttIssueList[i].dependency,
+                assignee: ganttIssueList[i].assignee ? ganttIssueList[i].assignee : '未分配',
+                issueBrowseUrl: ganttIssueList[i].issueBrowseUrl,
+                open: ganttIssueList[i].dependency == 'root' ? true : false
 
-        });
+            });
         }
 
-        console.log(data);
 
         gantt.init("gantt_here");
         gantt.parse({
@@ -316,66 +332,78 @@
         });
 
 
-
         gantt.attachEvent("onAfterTaskDrag", function (id, mode) {
-            gantt.eachParent(function(task){
-                console.log(task.text);
-            }, id);
             var task = gantt.getTask(id);
             if (mode == gantt.config.drag_mode.progress) {
                 var pr = Math.floor(task.progress * 100 * 10) / 10;
-               console.log(task.text + " is now " + pr + "% completed!");
             } else {
                 var s = task.start_date.valueOf();
                 var e = task.end_date.valueOf();
-                console.log(task.text + " starts at " + s + " and ends at " + e);
-                jQuery.ajax({
-                    "url": "gantt",
-                    "method": "POST",
-                    "data": {
+                var data = {
+                    "key": task.id,
+                    "config": new URL(location.href).searchParams.get('id'),
+                    "startDate": s,
+                    "endDate": e
+                };
+
+                updateGanttIssue(data);
+
+                gantt.eachParent(function(task){
+                    var s = task.start_date.valueOf();
+                    var e = task.end_date.valueOf();
+                    var data = {
                         "key": task.id,
                         "config": new URL(location.href).searchParams.get('id'),
                         "startDate": s,
                         "endDate": e
-                    },
-                    success: function (data) {
-                        console.log(data);
-                    },
-                    error: function (data) {
-                        console.log('error',data);
-                    }
-                });
+                    };
+                    updateGanttIssue(data);
+                }, id);
             }
         });
 
-        gantt.attachEvent("onLightboxSave", function(id, task, is_new){
-            //any custom logic here
-            console.log(task)
-            if(is_new == false){
+        gantt.attachEvent("onLightboxSave", function (id, task, is_new) {
+            if (is_new == false) {
                 var s = task.start_date.valueOf();
                 var e = task.end_date.valueOf();
-                jQuery.ajax({
-                    "url": "gantt",
-                    "method": "POST",
-                    "data": {
+                var data = {
+                    "key": task.id,
+                    "config": new URL(location.href).searchParams.get('id'),
+                    "summary": task.text,
+                    "startDate": s,
+                    "endDate": e
+                };
+                updateGanttIssue(data);
+
+                gantt.eachParent(function(task){
+                    var s = task.start_date.valueOf();
+                    var e = task.end_date.valueOf();
+                    var data = {
                         "key": task.id,
                         "config": new URL(location.href).searchParams.get('id'),
-                        "summary": task.text,
                         "startDate": s,
                         "endDate": e
-                    },
-                    success: function (data) {
-                        console.log(data);
-                    },
-                    error: function (data) {
-                        console.log('error',data);
-                    }
-                });
+                    };
+                    updateGanttIssue(data);
+                }, id);
             }
 
             return true;
         })
     });
+
+    function updateGanttIssue(data) {
+        jQuery.ajax({
+            "url": "gantt",
+            "method": "POST",
+            "data": data,
+            success: function (data) {
+            },
+            error: function (data) {
+                console.log('error', data);
+            }
+        });
+    }
 
 </script>
 </body>
